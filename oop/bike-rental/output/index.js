@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const user_1 = require("./user");
+const bike_1 = require("./bike");
+const station_1 = require("./station");
+const station = new station_1.Station("S1", 10);
+const bike = new bike_1.Bike("B1");
+const user = new user_1.User("U1", "John", 100);
+station.addBike(bike);
+console.log(station.availableBikes);
+user.rent(bike);
+console.log(station.availableBikes);
+user.startTime.setHours(user.startTime.getHours() - 2);
+user.return(station);
+console.log(user.balance);
+console.log(station.availableBikes);
