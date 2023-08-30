@@ -42,6 +42,11 @@ export class App {
     }
   
     registerBike(bike: Bike): void {
+      this.bikes.forEach(b => {
+        if (b.id == bike.id) {
+          throw new Error("Duplicate bike.")
+        }
+      })
       bike.id = crypto.randomUUID()
       this.bikes.push(bike)
     }
