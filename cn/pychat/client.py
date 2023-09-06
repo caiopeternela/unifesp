@@ -16,7 +16,7 @@ def receive_message():
 def send_message(event=None, server_message=None):
     chat_history.config(state="normal")
     if server_message:
-        chat_history.insert(END, f"Server: {server_message}\n\n")
+        chat_history.insert(END, f"Client 2: {server_message}\n\n")
     else:
         user_message = input_box.get()
         if user_message:
