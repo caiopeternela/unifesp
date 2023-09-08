@@ -6,7 +6,7 @@
 #include <pthread.h>
 
 int client_sockets[2] = {0, 0};
-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER; // Inicializa mutex para evitar condição de corrida entre as threads
 
 typedef struct {
     int sockfd;
@@ -16,6 +16,7 @@ typedef struct {
 void *handle_client(void *arg);
 
 int main() {
+    // Criação de sockets e threads
     int server_sockfd;
     struct sockaddr_in server_address;
     socklen_t client_len;
@@ -27,11 +28,12 @@ int main() {
         exit(1);
     }
 
+    // Configuração do servidor
     server_address.sin_family = AF_INET;
     server_address.sin_addr.s_addr = INADDR_ANY;
     server_address.sin_port = htons(50000);
 
-    if (bind(server_sockfd, (struct sockaddr *)&server_address, sizeof(server_address)) == -1) {
+    if (bind(server_sockfd, (struct sockaddr *)&server_address, sizeof(server_address)) == -1) { //  a função bind associa o socket criado a porta local do sistema operacional
         perror("bind");
         exit(1);
     }
@@ -44,6 +46,7 @@ int main() {
     printf("Server is running on 0.0.0.0:50000\n");
 
     while (1) {
+        // Configura as informações do socket do cliente
         int client_sockfd;
         struct sockaddr_in client_address;
         client_len = sizeof(client_address);
@@ -55,6 +58,7 @@ int main() {
         }
 
         pthread_mutex_lock(&lock);
+        // Tenta alocar o cliente caso seja possível
         if (client_sockets[0] == 0) {
             client_sockets[0] = client_sockfd;
         } else if (client_sockets[1] == 0) {
@@ -123,5 +127,4 @@ void *handle_client(void *arg) {
 
     free(data);
     close(client_sockfd);
-    return NULL;
 }
