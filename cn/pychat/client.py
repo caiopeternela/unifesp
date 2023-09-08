@@ -1,6 +1,6 @@
 import socket
 import threading
-from tkinter import Tk, Entry, Text, Scrollbar, BOTTOM, END, VERTICAL, font
+from tkinter import Tk, Entry, Text, Scrollbar, BOTTOM, END, VERTICAL, font // GUI
 
 HOST = "127.0.0.1"
 PORT = 50000
@@ -26,6 +26,7 @@ def send_message(event=None, server_message=None):
     chat_history.yview(END)
     input_box.delete(0, END)
 
+// Configurações Gráficas
 window = Tk()
 window.geometry("300x400")
 window.configure(bg="#282a36")
@@ -45,6 +46,7 @@ input_box = Entry(window, width=300, bg="#282a36", fg="#f8f8f2", font=customFont
 input_box.pack(side=BOTTOM)
 input_box.bind("<Return>", send_message)
 
+// Cria outra thread independente pra não bloquear a atualização da GUI no envio/recebimento de mensagens
 receive_thread = threading.Thread(target=receive_message)
 receive_thread.start()
 
