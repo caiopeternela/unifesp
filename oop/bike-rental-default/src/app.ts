@@ -1,7 +1,8 @@
 import { Bike } from "./bike";
 import { Rent } from "./rent";
 import { User } from "./user";
-import * as crypto from 'crypto';
+import crypto from 'crypto';
+import bcrypt from 'bcrypt'
 
 export class App {
     users: User[] = []
@@ -9,10 +10,23 @@ export class App {
     rents: Rent[] = []
 
     addUser(user: User): void {
-        if (this.users.some(rUser => { return rUser.email === user.email })) {
-            throw new Error('User with same email already registered.')
-        }
-        this.users.push(user)
+      if (this.users.some(rUser => rUser.email === user.email)) {
+          throw new Error('User with same email already registered.')
+      }
+
+      const salt = bcrypt.genSaltSync(10);
+      user.password = bcrypt.hashSync(user.password, salt);
+
+      this.users.push(user);
+    }
+
+    autheUser(email: string, password: string): boolean {
+      const user = this.findUser(email);
+      if (!user) {
+          return false;
+      }
+
+      return bcrypt.compareSync(password, user.password);
     }
   
     findUser(email: string): User | undefined {
@@ -49,5 +63,17 @@ export class App {
       })
       bike.id = crypto.randomUUID()
       this.bikes.push(bike)
+    }
+
+    listUsers(): User[] {
+      return this.users;
+    }
+
+    listRents(): Rent[] {
+      return this.rents;
+    }
+
+    listBikes(): Bike[] {
+      return this.bikes;
     }
 }
