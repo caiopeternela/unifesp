@@ -20,8 +20,8 @@ export class App {
       this.users.push(user);
     }
 
-    authUser(email: string, password: string): boolean {
-      const user = this.findUser(email);
+    authUser(userId: string, password: string): boolean {
+      const user = this.users.find(user => user.id === userId)
       if (!user) {
           return false;
       }
