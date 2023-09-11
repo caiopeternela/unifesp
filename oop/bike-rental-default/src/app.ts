@@ -20,7 +20,7 @@ export class App {
       this.users.push(user);
     }
 
-    autheUser(email: string, password: string): boolean {
+    authUser(email: string, password: string): boolean {
       const user = this.findUser(email);
       if (!user) {
           return false;
