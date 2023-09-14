@@ -21,7 +21,7 @@ void points(int x, int y, int xc, int yc) {
   glVertex2i(-x + xc, y + yc);
 }
 
-void bresenDraw(int xc, int yc, int radius) {
+void bresenham(int xc, int yc, int radius) {
   int x = 0;
   int y = radius;
   int d = 1 - radius;
@@ -72,7 +72,7 @@ void display() {
   glColor3f(0.0, 0.0, 0.0);
   glBegin(GL_POINTS);
 
-  bresenDraw(x_global, y_global, radius);
+  bresenham(x_global, y_global, radius);
 
   glEnd();
   glFlush();
