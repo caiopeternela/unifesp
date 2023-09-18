@@ -1,5 +1,5 @@
-import * as crypto from 'crypto';
-import * as bcrypt from 'bcrypt';
+import * as crypto from "crypto";
+import * as bcrypt from "bcrypt";
 
 class Bike {
   id: string
@@ -8,13 +8,14 @@ class Bike {
     latitude: number
     longitude: number
   }
+  rentedAt?: Date
 
   constructor(latitude: number = 0, longitude: number = 0) {
     this.id = crypto.randomUUID()
     this.availability = true
     this.location = {
       latitude: latitude,
-      longitude: longitude
+      longitude: longitude,
     }
   }
 
@@ -34,12 +35,12 @@ class User {
     this.id = crypto.randomUUID()
     this.email = email
     this.password = password
-    this.passwordHash = ''
+    this.passwordHash = this.setPassword(password)
   }
 
-  setPassword(password: string): void {
+  setPassword(password: string): string {
     const salt = 10
-    this.passwordHash = bcrypt.hashSync(password, salt)
+    return bcrypt.hashSync(password, salt)
   }
 
   checkPassword(password: string): boolean {
@@ -47,15 +48,41 @@ class User {
   }
 }
 
+class Rent {
+  private constructor(
+    public bike: Bike,
+    public user: User,
+    public dateFrom: Date,
+    public dateTo: Date,
+    public dateReturned?: Date
+  ) {}
+
+  static create(rents: Rent[], bike: Bike, user: User, startDate: Date, endDate: Date): Rent {
+    const canCreate = Rent.canRent(rents, startDate, endDate)
+    if (canCreate) return new Rent(bike, user, startDate, endDate)
+    throw new Error('Overlapping dates.')
+  }
+
+  static canRent(rents: Rent[], startDate: Date, endDate: Date): boolean {
+    for (const rent of rents) {
+      if (startDate <= rent.dateTo && endDate >= rent.dateFrom) {
+        return false
+      }
+    }
+    return true
+  }
+}
+
 class App {
   users: User[] = []
   bikes: Bike[] = []
+  rents: Rent[] = []
+  pricePerHour: number = 10
 
   addUser(user: User): void {
-    if (this.users.some(u => u.email === user.email)) {
-      throw new Error('User with the same email already registered.')
+    if (this.users.some(existingUser => existingUser.email === user.email)) {
+      throw new Error("User with same email already registered.")
     }
-    user.setPassword(user.password)
     this.users.push(user)
   }
 
@@ -63,16 +90,18 @@ class App {
     return this.users.find(user => user.email === email)
   }
 
-  authUser(email: string, password: string): User | undefined {
+  authUser(email: string, password: string): boolean {
     const user = this.findUser(email)
-    if (user && user.checkPassword(password)) {
-      return user
+    if (!user) {
+      return false
     }
-    return undefined
+    return user.checkPassword(password)
   }
 
-  registerBike(latitude?: number, longitude?: number): void {
-    const bike = new Bike(latitude, longitude)
+  registerBike(bike: Bike): void {
+    if (this.bikes.some(existingBike => existingBike.id === bike.id)) {
+      throw new Error("Duplicate bike.")
+    }
     this.bikes.push(bike)
   }
 
@@ -80,82 +109,57 @@ class App {
     this.users = this.users.filter(u => u.id !== user.id)
   }
 
+  removeBike(bike: Bike): void {
+    this.bikes = this.bikes.filter(b => b.id !== bike.id)
+  }
+
+  rentBike(email: string, bikeId: string): Bike | undefined {
+    const user = this.findUser(email)
+    const bike = this.bikes.find(bike => bike.id === bikeId)
+
+    if (!user || !bike) {
+        return undefined
+    }
+
+    if (!bike.availability) {
+        throw new Error('Bike is not available for rent.')
+    }
+
+    bike.availability = false
+    bike.rentedAt = new Date()
+    return bike
+  }
+
+  updateBikeLocation(bikeId: string, latitude: number, longitude: number): void {
+    const bike = this.bikes.find(bike => bike.id === bikeId)
+    if (!bike) {
+      throw new Error("Bike not found.")
+    }
+    bike.setLocation(latitude, longitude)
+  }
+
+  returnBike(bikeId: string): number | undefined {
+    const bike = this.bikes.find(bike => bike.id === bikeId)
+    if (!bike) {
+      throw new Error("Bike not found.")
+    }
+    if (bike.availability) {
+      throw new Error("Bike is already available.")
+    }
+    bike.availability = true
+    const rentalHours = Math.ceil((new Date().getTime() - bike.rentedAt!.getTime()) / (1000 * 60 * 60))
+    return rentalHours * this.pricePerHour
+  }
+
   listUsers(): User[] {
     return this.users
+  }
+
+  listRents(): Rent[] {
+    return this.rents
   }
 
   listBikes(): Bike[] {
     return this.bikes
   }
-
-  rentBike(userId: string, bikeId: string): Bike | undefined {
-    const user = this.findUser(userId)
-    const bike = this.bikes.find(bike => bike.id === bikeId)
-
-    if (!user || !bike) {
-      return undefined
-    }
-
-    if (!bike.availability) {
-      throw new Error('Bike is not available for rent.')
-    }
-
-    bike.availability = false
-    return bike
-  }
-
-  returnBike(bikeId: string): number | undefined {
-    const bike = this.bikes.find(bike => bike.id === bikeId)
-
-    if (!bike) {
-      return undefined
-    }
-
-    if (bike.availability) {
-      throw new Error('Bike is already available.')
-    }
-
-    bike.availability = true
-    return 50
-  }
-
-  updateBikeLocation(bikeId: string, latitude: number, longitude: number): boolean {
-    const bike = this.bikes.find(bike => bike.id === bikeId)
-    if (!bike) {
-      return false
-    }
-    bike.setLocation(latitude, longitude)
-    return true
-  }
-}
-
-const app = new App()
-
-const user1 = new User('user@email.com', 'abc123')
-app.addUser(user1)
-
-const authenticatedUser = app.authUser('user@email.com', 'abc123')
-if (authenticatedUser) {
-  console.log('User authenticated:', authenticatedUser.email)
-} else {
-  console.log('Authentication failed.')
-}
-
-app.registerBike(40.730610, -73.935242)
-const bikesList = app.listBikes()
-console.log('Bikes:', bikesList)
-
-const rentedBike = app.rentBike(user1.id, bikesList[0].id)
-if (rentedBike) {
-  console.log('Bike rented:', rentedBike.id)
-} else {
-  console.log('Rental failed.')
-}
-
-const returnedBikeId = rentedBike ? rentedBike.id : ''
-const rentalFee = app.returnBike(returnedBikeId)
-if (rentalFee !== undefined) {
-  console.log('Bike returned. Rental fee:', rentalFee)
-} else {
-  console.log('Return failed.')
 }

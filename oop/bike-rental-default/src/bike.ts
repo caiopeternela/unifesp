@@ -1,13 +1,25 @@
+import * as crypto from "crypto";
+
 export class Bike {
-  constructor(
-      public name: string,
-      public type: string,
-      public bodySize: number,
-      public maxLoad: number,
-      public rate: number,
-      public description: string,
-      public ratings: number,
-      public imageUrls: string[],
-      public id?: string
-  ) {}
+  id: string
+  availability: boolean
+  location: {
+    latitude: number
+    longitude: number
+  }
+  rentedAt?: Date
+
+  constructor(latitude: number = 0, longitude: number = 0) {
+    this.id = crypto.randomUUID()
+    this.availability = true
+    this.location = {
+      latitude: latitude,
+      longitude: longitude,
+    }
+  }
+
+  setLocation(latitude: number, longitude: number): void {
+    this.location.latitude = latitude
+    this.location.longitude = longitude
+  }
 }
