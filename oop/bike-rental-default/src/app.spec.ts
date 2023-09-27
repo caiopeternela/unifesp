@@ -35,4 +35,90 @@ describe("App", () => {
       app.updateBikeLocation("fakeBikeId", -23.550520, -46.633308)
     }).toThrowError("Bike not found.")
   })
+
+  it("should be able to add a new user", () => {
+    const app = new App()
+    const user = new User("user@email.com", "123")
+    app.addUser(user)
+    expect(app.findUser(user.email)).toEqual(user)
+  })
+
+  it("should throw an error if trying to add a user with an existing email", () => {
+    const app = new App()
+    const user = new User("user@email.com", "123")
+    app.addUser(user)
+    expect(() => app.addUser(new User("user@email.com", "456"))).toThrowError("User with same email already registered.")
+  })
+
+  it("should authenticate user with correct credentials", () => {
+    const app = new App()
+    const user = new User("user@email.com", "123")
+    app.addUser(user)
+    expect(app.authUser(user.email, "123")).toBeTruthy()
+  })
+
+  it("should not authenticate user with incorrect credentials", () => {
+    const app = new App()
+    const user = new User("user@email.com", "123")
+    app.addUser(user)
+    expect(app.authUser(user.email, "456")).toBeFalsy()
+  })
+
+  it("should register a bike successfully", () => {
+    const app = new App()
+    const bike = new Bike()
+    app.registerBike(bike)
+    expect(app.bikes).toContain(bike)
+  })
+
+  it("should throw an error when trying to register a duplicate bike", () => {
+    const app = new App()
+    const bike = new Bike()
+    app.registerBike(bike)
+    expect(() => app.registerBike(bike)).toThrowError("Duplicate bike.")
+  })
+
+  it("should remove a user successfully", () => {
+    const app = new App()
+    const user = new User("user@email.com", "123")
+    app.addUser(user)
+    app.removeUser(user)
+    expect(app.users).not.toContain(user)
+  })
+
+  it("should remove a bike successfully", () => {
+    const app = new App()
+    const bike = new Bike()
+    app.registerBike(bike)
+    app.removeBike(bike)
+    expect(app.bikes).not.toContain(bike)
+  })
+
+  it("should rent an available bike successfully", () => {
+    const app = new App()
+    const user = new User("user@email.com", "123")
+    const bike = new Bike()
+    app.addUser(user)
+    app.registerBike(bike)
+    const rentedBike = app.rentBike(user.email, bike.id)
+    expect(rentedBike).toEqual(bike)
+    expect(rentedBike?.availability).toBeFalsy()
+  })
+
+  it("should throw an error when trying to rent an unavailable bike", () => {
+    const app = new App()
+    const user = new User("user@email.com", "123")
+    const bike = new Bike()
+    app.addUser(user)
+    app.registerBike(bike)
+    bike.availability = false
+    expect(() => app.rentBike(user.email, bike.id)).toThrowError('Bike is not available for rent.')
+  })
+
+  it("should throw an error when trying to rent a bike to an unregistered user", () => {
+    const app = new App()
+    const bike = new Bike()
+    app.registerBike(bike)
+    expect(() => app.rentBike("fake@email.com", bike.id)).toThrowError('User not found.')
+  })
 })

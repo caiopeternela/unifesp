@@ -44,16 +44,19 @@ export class App {
 
   rentBike(email: string, bikeId: string): Bike | undefined {
     const user = this.findUser(email)
+    if (!user) {
+      throw new Error("User not found.")
+    }
+    
     const bike = this.bikes.find(bike => bike.id === bikeId)
-
-    if (!user || !bike) {
-        return undefined
+    if (!bike) {
+      throw new Error("Bike not found.")
     }
-
+  
     if (!bike.availability) {
-        throw new Error('Bike is not available for rent.')
+      throw new Error("Bike is not available for rent.")
     }
-
+  
     bike.availability = false
     bike.rentedAt = new Date()
     return bike
