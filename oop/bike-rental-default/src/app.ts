@@ -1,6 +1,6 @@
-import { Bike } from "./bike";
-import { Rent } from "./rent";
-import { User } from "./user";
+import { Bike } from "./bike"
+import { Rent } from "./rent"
+import { User } from "./user"
 
 export class App {
   users: User[] = []

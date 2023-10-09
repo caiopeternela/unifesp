@@ -1,5 +1,5 @@
-import { Bike } from "./bike";
-import { User } from "./user";
+import { Bike } from "./bike"
+import { User } from "./user"
 
 export class Rent {
     private constructor(
@@ -14,7 +14,7 @@ export class Rent {
                   startDate: Date, endDate: Date): Rent {
         const canCreate = Rent.canRent(rents, startDate, endDate)
         if (canCreate) return new Rent(bike, user, startDate, endDate)
-        throw new Error('Overlapping dates.')
+        throw new Error("Overlapping dates.")
     }
 
     static canRent(rents: Rent[], startDate: Date, endDate: Date): boolean {

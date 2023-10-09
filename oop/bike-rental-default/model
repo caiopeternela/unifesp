@@ -1,5 +1,5 @@
-import * as crypto from "crypto";
-import * as bcrypt from "bcrypt";
+import * as crypto from "crypto"
+import * as bcrypt from "bcrypt"
 
 class Bike {
   id: string
@@ -60,7 +60,7 @@ class Rent {
   static create(rents: Rent[], bike: Bike, user: User, startDate: Date, endDate: Date): Rent {
     const canCreate = Rent.canRent(rents, startDate, endDate)
     if (canCreate) return new Rent(bike, user, startDate, endDate)
-    throw new Error('Overlapping dates.')
+    throw new Error("Overlapping dates.")
   }
 
   static canRent(rents: Rent[], startDate: Date, endDate: Date): boolean {
@@ -122,7 +122,7 @@ class App {
     }
 
     if (!bike.availability) {
-        throw new Error('Bike is not available for rent.')
+        throw new Error("Bike is not available for rent.")
     }
 
     bike.availability = false

@@ -1,6 +1,6 @@
-import { Bike } from "../../src/bike";
-import { BikeRepo } from "../../src/ports/bike-repo";
-import crypto from 'crypto'
+import { Bike } from "../../src/bike"
+import { BikeRepo } from "../../src/ports/bike-repo"
+import crypto from "crypto"
 
 export class FakeBikeRepo implements BikeRepo {
     bikes: Bike[] = []

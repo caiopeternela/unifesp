@@ -1,16 +1,17 @@
-import { Bike } from "./bike";
-import { Crypt } from "./crypt";
-import { Rent } from "./rent";
-import { User } from "./user";
-import { Location } from "./location";
-import { BikeNotFoundError } from "./errors/bike-not-found-error";
-import { UnavailableBikeError } from "./errors/unavailable-bike-error";
-import { UserNotFoundError } from "./errors/user-not-found-error";
-import { DuplicateUserError } from "./errors/duplicate-user-error";
-import { RentNotFoundError } from "./errors/rent-not-found-error";
-import { RentRepo } from "./ports/rent-repo";
-import { UserRepo } from "./ports/user-repo";
-import { BikeRepo } from "./ports/bike-repo";
+import { Bike } from "./bike"
+import { Crypt } from "./crypt"
+import { Rent } from "./rent"
+import { User } from "./user"
+import { Location } from "./location"
+import { BikeNotFoundError } from "./errors/bike-not-found-error"
+import { UnavailableBikeError } from "./errors/unavailable-bike-error"
+import { UserNotFoundError } from "./errors/user-not-found-error"
+import { DuplicateUserError } from "./errors/duplicate-user-error"
+import { RentNotFoundError } from "./errors/rent-not-found-error"
+import { OpenRentError } from "./errors/open-rent-error"
+import { RentRepo } from "./ports/rent-repo"
+import { UserRepo } from "./ports/user-repo"
+import { BikeRepo } from "./ports/bike-repo"
 
 export class App {
     crypt: Crypt = new Crypt()
@@ -47,6 +48,12 @@ export class App {
 
     async removeUser(email: string): Promise<void> {
         await this.findUser(email)
+
+        const openRents = await this.rentRepo.findOpenRentsFor(email)
+        if (openRents.length > 0) {
+            throw new OpenRentError()
+        }
+
         await this.userRepo.remove(email)
     }
     
@@ -97,7 +104,7 @@ export class App {
 }
 
 function diffHours(dt2: Date, dt1: Date) {
-  var diff = (dt2.getTime() - dt1.getTime()) / 1000;
-  diff /= (60 * 60);
-  return Math.abs(diff);
+  var diff = (dt2.getTime() - dt1.getTime()) / 1000
+  diff /= (60 * 60)
+  return Math.abs(diff)
 }

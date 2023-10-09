@@ -15,7 +15,7 @@ export class Station {
     }
 
     removeBike(bike: Bike): void {
-      this.bikes = this.bikes.filter(b => b.id !== bike.id);
+      this.bikes = this.bikes.filter(b => b.id !== bike.id)
     }
 
     get availableBikes(): Array<Bike> {

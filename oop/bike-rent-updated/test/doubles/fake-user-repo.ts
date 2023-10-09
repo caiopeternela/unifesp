@@ -1,6 +1,6 @@
-import { UserRepo } from "../../src/ports/user-repo";
-import { User } from "../../src/user";
-import crypto from 'crypto'
+import { UserRepo } from "../../src/ports/user-repo"
+import { User } from "../../src/user"
+import crypto from "crypto"
 
 export class FakeUserRepo implements UserRepo {
     users: User[] = []

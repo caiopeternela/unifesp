@@ -1,7 +1,7 @@
-import { App } from "./app";
-import { Bike } from "./bike";
-import { User } from "./user";
-import sinon from "sinon";
+import { App } from "./app"
+import { Bike } from "./bike"
+import { User } from "./user"
+import sinon from "sinon"
 
 describe("App", () => {
   it("should correctly calculate the rent amount", async () => {
@@ -112,13 +112,13 @@ describe("App", () => {
     app.addUser(user)
     app.registerBike(bike)
     bike.availability = false
-    expect(() => app.rentBike(user.email, bike.id)).toThrowError('Bike is not available for rent.')
+    expect(() => app.rentBike(user.email, bike.id)).toThrowError("Bike is not available for rent.")
   })
 
   it("should throw an error when trying to rent a bike to an unregistered user", () => {
     const app = new App()
     const bike = new Bike()
     app.registerBike(bike)
-    expect(() => app.rentBike("fake@email.com", bike.id)).toThrowError('User not found.')
+    expect(() => app.rentBike("fake@email.com", bike.id)).toThrowError("User not found.")
   })
 })

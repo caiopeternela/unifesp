@@ -1,5 +1,5 @@
-import * as crypto from "crypto";
-import * as bcrypt from "bcrypt";
+import * as crypto from "crypto"
+import * as bcrypt from "bcrypt"
 
 export class User {
   id: string

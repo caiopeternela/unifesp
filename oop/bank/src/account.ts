@@ -1,4 +1,4 @@
-import { AccountHolder } from './account-holder'
+import { AccountHolder } from "./account-holder"
 
 export class Account {
   private _balance: number = 0.0
