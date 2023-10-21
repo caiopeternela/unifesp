@@ -9,17 +9,17 @@ import { UserNotFoundError } from "../src/errors/user-not-found-error"
 import { DuplicateUserError } from "../src/errors/duplicate-user-error"
 import { RentNotFoundError } from "../src/errors/rent-not-found-error"
 import { OpenRentError } from "../src/errors/open-rent-error"
-import { FakeUserRepo } from "./doubles/fake-user-repo"
+import { PrismaUserRepo } from "../src/ports/prisma-user-repo"
 import { FakeBikeRepo } from "./doubles/fake-bike-repo"
 import { FakeRentRepo } from "./doubles/fake-rent-repo"
 
-let userRepo: FakeUserRepo
+let userRepo: PrismaUserRepo
 let bikeRepo: FakeBikeRepo
 let rentRepo: FakeRentRepo
 
 describe("App", () => {
     beforeEach(() => {
-        userRepo = new FakeUserRepo()
+        userRepo = new PrismaUserRepo()
         bikeRepo = new FakeBikeRepo()
         rentRepo = new FakeRentRepo()
     })
@@ -58,7 +58,7 @@ describe("App", () => {
 
     it("should correctly handle a bike rent", async () => {
         const app = new App(userRepo, bikeRepo, rentRepo)
-        const user = new User("Jose", "jose@mail.com", "1234")
+        const user = new User("jose", "jose@mail.com", "1234")
         await app.registerUser(user)
         const bike = new Bike("caloi mountainbike", "mountain bike",
             1234, 1234, 100.0, "My bike", 5, [])
@@ -73,7 +73,7 @@ describe("App", () => {
 
     it("should throw unavailable bike when trying to rent with an unavailable bike", async () => {
         const app = new App(userRepo, bikeRepo, rentRepo)
-        const user = new User("Jose", "jose@mail.com", "1234")
+        const user = new User("jose", "jose@mail.com", "1234")
         await app.registerUser(user)
         const bike = new Bike("caloi mountainbike", "mountain bike",
             1234, 1234, 100.0, "My bike", 5, [])
@@ -127,7 +127,7 @@ describe("App", () => {
 
     it("should throw rent not found error when trying to return a bike that was not rented", async () => {
         const app = new App(userRepo, bikeRepo, rentRepo)
-        const user = new User("jose", "jose@email.com", "1234")
+        const user = new User("jose", "jose@mail.com", "1234")
         await app.registerUser(user)
         const bike = new Bike("caloi mountainbike", "mountain bike",
             1234, 1234, 100.0, "My bike", 5, [])
