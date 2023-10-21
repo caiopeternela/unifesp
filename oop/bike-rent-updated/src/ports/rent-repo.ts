@@ -1,8 +1,8 @@
 import { Rent } from "../rent"
 
 export interface RentRepo {
-    add(rent: Rent): Promise<number>
-    findOpen(bikeId: number, userEmail: string): Promise<Rent>
-    update(id: number, rent: Rent): Promise<void>
-    findOpenRentsFor(userEmail: string): Promise<Rent[]>
+    add(rent: Rent): Promise<string>
+    findOpen(bikeId: string, userEmail: string): Promise<Rent>
+    findOpenFor(userEmail: string): Promise<Rent[]>
+    update(id: string, rent: Rent): Promise<void>
 }

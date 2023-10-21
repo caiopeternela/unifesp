@@ -8,32 +8,23 @@ generator client {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
+  id       String @id @default(uuid())
   name     String
   email    String @unique
   password String
 }
 
 model Bike {
-  id        Int     @id @default(autoincrement())
-  type      String
-  bodySize  Int
-  maxLoad   Int
-  rate      Int
-  ratings   Int     @default(0)
-  imageUrl  String
-  available Boolean @default(true)
-  location  Unsupported("Location")
-  rents     Rent[]
-}
-
-model Rent {
-  id       Int      @id @default(autoincrement())
-  start    DateTime
-  end      DateTime
-  bikeId   Int
-  bike     Bike     @relation(fields: [bikeId], references: [id])
-  userId   Int
-  user     User     @relation(fields: [userId], references: [id])
-  @@unique([bikeId, userId])
+  id          String   @id @default(uuid())
+  name        String
+  type        String
+  bodySize    Int
+  maxLoad     Int
+  rate        Float
+  description String
+  ratings     Float
+  imageUrls   String
+  available   Boolean  @default(true)
+  latitude    Float
+  longitude   Float
 }
