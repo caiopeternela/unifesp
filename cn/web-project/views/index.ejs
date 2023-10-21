@@ -4,8 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Project</title>
+    <style>
+      body {
+          background-color: black;
+          color: white;
+      }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            function updateTime() {
+                const now = new Date()
+                const date = new Intl.DateTimeFormat("en-US", { dateStyle: "full", timeStyle: "long", timeZone: "America/Sao_Paulo" }).format(now)
+                document.getElementById('time').innerText = date
+            }
+            setInterval(updateTime, 1000)
+            updateTime()
+        })
+    </script>
 </head>
 <body>
-    <h1><%= date %></h1>
+    <h1 id="time"><%= date %></h1>
+    <h1 id="time">IP: <%= ip %></h1>
 </body>
 </html>
