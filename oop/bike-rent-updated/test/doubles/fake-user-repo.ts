@@ -1,6 +1,5 @@
 import { UserRepo } from "../../src/ports/user-repo"
 import { User } from "../../src/user"
-import crypto from "crypto"
 
 export class FakeUserRepo implements UserRepo {
     users: User[] = []
@@ -9,8 +8,8 @@ export class FakeUserRepo implements UserRepo {
         return this.users.find(user => user.email === email)
     }
 
-    async add(user: User): Promise<string> {
-        const newId = crypto.randomUUID()
+    async add(user: User): Promise<number> {
+        const newId = Date.now()
         user.id = newId
         this.users.push(user)
         return newId

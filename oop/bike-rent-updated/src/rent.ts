@@ -8,7 +8,7 @@ export class Rent {
         public bike: Bike,
         public user: User,
         public start: Date,
-        public id?: string
+        public id?: number
     ) {}
 }
 

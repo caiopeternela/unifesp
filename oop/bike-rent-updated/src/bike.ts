@@ -9,9 +9,9 @@ export class Bike {
         public rate: number,
         public description: string,
         public ratings: number,
-        public imageUrls: string[],
+        public imageUrl: string,
         public available: boolean = true,
         public location: Location = new Location(0.0, 0.0),
-        public id?: string
+        public id?: number
     ) {}
 }

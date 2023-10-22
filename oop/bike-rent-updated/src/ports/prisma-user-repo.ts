@@ -7,7 +7,7 @@ export class PrismaUserRepo implements UserRepo {
 
   async find(email: string): Promise<User | null> {
     const user = await this.prismaClient.user.findUnique({
-      where: { email },
+      where: { email: email },
     })
 
     if (!user) return null
@@ -15,7 +15,7 @@ export class PrismaUserRepo implements UserRepo {
     return new User(user.name, user.email, user.password, user.id)
   }
 
-  async add(user: User): Promise<string> {
+  async add(user: User): Promise<number> {
     const newUser = await this.prismaClient.user.create({
       data: {
         name: user.name,
@@ -29,7 +29,7 @@ export class PrismaUserRepo implements UserRepo {
 
   async remove(email: string): Promise<void> {
     await this.prismaClient.user.delete({
-      where: { email },
+      where: { email: email },
     })
   }
 

@@ -1,5 +1,5 @@
-import { RentRepo } from "../../src/ports/rent-repo"
-import { Rent } from "../../src/rent"
+import { RentRepo } from "./rent-repo"
+import { Rent } from "../rent"
 import prisma from "../../prisma/client"
 
 export class PrismaRentRepo implements RentRepo {
@@ -26,7 +26,7 @@ export class PrismaRentRepo implements RentRepo {
             bike: {
                 id: bikeId
             },
-            end: false
+            end: undefined
           },
           //include: {
             // bike: true,
@@ -54,7 +54,7 @@ export class PrismaRentRepo implements RentRepo {
               user: {
                 email: userEmail,
               },
-              end: false
+              end: undefined
             },
             //include: {
               // user: true,

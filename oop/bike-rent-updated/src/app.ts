@@ -28,7 +28,7 @@ export class App {
         return user
     }
 
-    async registerUser(user: User): Promise<string> {
+    async registerUser(user: User): Promise<number> {
         if (await this.userRepo.find(user.email)) {
           throw new DuplicateUserError()
         }
@@ -42,7 +42,7 @@ export class App {
         return await this.crypt.compare(password, user.password)
     }
 
-    async registerBike(bike: Bike): Promise<string> {
+    async registerBike(bike: Bike): Promise<number> {
         return await this.bikeRepo.add(bike)
     }
 
@@ -57,7 +57,7 @@ export class App {
         await this.userRepo.remove(email)
     }
     
-    async rentBike(bikeId: string, userEmail: string): Promise<string> {
+    async rentBike(bikeId: number, userEmail: string): Promise<number> {
         const bike = await this.findBike(bikeId)
         if (!bike.available) {
             throw new UnavailableBikeError()
@@ -69,7 +69,7 @@ export class App {
         return await this.rentRepo.add(newRent)
     }
 
-    async returnBike(bikeId: string, userEmail: string): Promise<number> {
+    async returnBike(bikeId: number, userEmail: string): Promise<number> {
         const now = new Date()
         const rent = await this.rentRepo.findOpen(bikeId, userEmail)
         if (!rent) throw new RentNotFoundError()
@@ -89,14 +89,14 @@ export class App {
         return await this.bikeRepo.list()
     }
 
-    async moveBikeTo(bikeId: string, location: Location) {
+    async moveBikeTo(bikeId: number, location: Location) {
         const bike = await this.findBike(bikeId)
         bike.location.latitude = location.latitude
         bike.location.longitude = location.longitude
         await this.bikeRepo.update(bikeId, bike)
     }
 
-    async findBike(bikeId: string): Promise<Bike> {
+    async findBike(bikeId: number): Promise<Bike> {
         const bike = await this.bikeRepo.find(bikeId)
         if (!bike) throw new BikeNotFoundError()
         return bike

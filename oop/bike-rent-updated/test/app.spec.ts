@@ -9,17 +9,17 @@ import { UserNotFoundError } from "../src/errors/user-not-found-error"
 import { DuplicateUserError } from "../src/errors/duplicate-user-error"
 import { RentNotFoundError } from "../src/errors/rent-not-found-error"
 import { OpenRentError } from "../src/errors/open-rent-error"
-import { PrismaUserRepo } from "../src/ports/prisma-user-repo"
 import { FakeBikeRepo } from "./doubles/fake-bike-repo"
 import { FakeRentRepo } from "./doubles/fake-rent-repo"
+import { FakeUserRepo } from "./doubles/fake-user-repo"
 
-let userRepo: PrismaUserRepo
+let userRepo: FakeUserRepo
 let bikeRepo: FakeBikeRepo
 let rentRepo: FakeRentRepo
 
 describe("App", () => {
     beforeEach(() => {
-        userRepo = new PrismaUserRepo()
+        userRepo = new FakeUserRepo()
         bikeRepo = new FakeBikeRepo()
         rentRepo = new FakeRentRepo()
     })
@@ -29,7 +29,7 @@ describe("App", () => {
         const user = new User("Jose", "jose@mail.com", "1234")
         await app.registerUser(user)
         const bike = new Bike("caloi mountainbike", "mountain bike",
-            1234, 1234, 100.0, "My bike", 5, [])
+            1234, 1234, 100.0, "My bike", 5, "image-url")
         await app.registerBike(bike)
         const clock = sinon.useFakeTimers()
         await app.rentBike(bike.id, user.email)
@@ -42,7 +42,7 @@ describe("App", () => {
     it("should be able to move a bike to a specific location", async () => {
         const app = new App(userRepo, bikeRepo, rentRepo)
         const bike = new Bike("caloi mountainbike", "mountain bike",
-            1234, 1234, 100.0, "My bike", 5, [])
+            1234, 1234, 100.0, "My bike", 5, "image-url")
         await app.registerBike(bike)
         const newYork = new Location(40.753056, -73.983056)
         await app.moveBikeTo(bike.id, newYork)
@@ -53,7 +53,7 @@ describe("App", () => {
     it("should throw an exception when trying to move an unregistered bike", async () => {
         const app = new App(userRepo, bikeRepo, rentRepo)
         const newYork = new Location(40.753056, -73.983056)
-        await expect(app.moveBikeTo("fake-id", newYork)).rejects.toThrow(BikeNotFoundError)
+        await expect(app.moveBikeTo(1, newYork)).rejects.toThrow(BikeNotFoundError)
     })
 
     it("should correctly handle a bike rent", async () => {
@@ -61,7 +61,7 @@ describe("App", () => {
         const user = new User("jose", "jose@mail.com", "1234")
         await app.registerUser(user)
         const bike = new Bike("caloi mountainbike", "mountain bike",
-            1234, 1234, 100.0, "My bike", 5, [])
+            1234, 1234, 100.0, "My bike", 5, "image-url")
         await app.registerBike(bike)
         await app.rentBike(bike.id, user.email)
         const appRentRepo = (app.rentRepo) as FakeRentRepo
@@ -76,7 +76,7 @@ describe("App", () => {
         const user = new User("jose", "jose@mail.com", "1234")
         await app.registerUser(user)
         const bike = new Bike("caloi mountainbike", "mountain bike",
-            1234, 1234, 100.0, "My bike", 5, [])
+            1234, 1234, 100.0, "My bike", 5, "image-url")
         await app.registerBike(bike)
         await app.rentBike(bike.id, user.email)
         await expect(app.rentBike(bike.id, user.email))
@@ -130,7 +130,7 @@ describe("App", () => {
         const user = new User("jose", "jose@mail.com", "1234")
         await app.registerUser(user)
         const bike = new Bike("caloi mountainbike", "mountain bike",
-            1234, 1234, 100.0, "My bike", 5, [])
+            1234, 1234, 100.0, "My bike", 5, "image-url")
         await app.registerBike(bike)
         await expect(app.returnBike(bike.id, user.email)).rejects.toThrow(RentNotFoundError)
     })
@@ -141,7 +141,7 @@ describe("App", () => {
         const user = new User("jose", "jose@mail.com", "1234")
         await app.registerUser(user)
         const bike = new Bike("caloi mountainbike", "mountain bike",
-            1234, 1234, 100.0, "My bike", 5, [])
+            1234, 1234, 100.0, "My bike", 5, "image-url")
         await app.registerBike(bike)
     
         await app.rentBike(bike.id, user.email)
