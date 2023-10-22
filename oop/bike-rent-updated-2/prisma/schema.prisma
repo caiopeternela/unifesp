@@ -1,0 +1,40 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  password String
+  rents    Rent[]
+}
+
+model Bike {
+  id        Int     @id @default(autoincrement())
+  type      String
+  bodySize  Int
+  maxLoad   Int
+  rate      Int
+  ratings   Int     @default(0)
+  imageUrl  String
+  available Boolean @default(true)
+  location  Unsupported("Location")
+  rents     Rent[]
+}
+
+model Rent {
+  id       Int      @id @default(autoincrement())
+  start    DateTime
+  end      DateTime
+  bikeId   Int
+  bike     Bike     @relation(fields: [bikeId], references: [id])
+  userId   Int
+  user     User     @relation(fields: [userId], references: [id])
+  @@unique([bikeId, userId])
+}
