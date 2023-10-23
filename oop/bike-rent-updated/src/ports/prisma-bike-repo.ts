@@ -6,7 +6,7 @@ export class PrismaBikeRepo implements BikeRepo {
     private prismaClient = prisma
 
     async find(id: number): Promise<Bike> {
-        const bike = this.prismaClient.bike.findUnique({
+        const bike = await this.prismaClient.bike.findUnique({
             where: { id: id }
         })
 
@@ -49,7 +49,7 @@ export class PrismaBikeRepo implements BikeRepo {
     }
 
     async list(): Promise<Bike[]> {
-        const bikes = prisma.bike.findMany()
+        const bikes = await prisma.bike.findMany()
         return bikes.map(bike => new Bike(
             bike.name,
             bike.type,

@@ -11,15 +11,15 @@ import { RentNotFoundError } from "../src/errors/rent-not-found-error"
 import { OpenRentError } from "../src/errors/open-rent-error"
 import { FakeBikeRepo } from "./doubles/fake-bike-repo"
 import { FakeRentRepo } from "./doubles/fake-rent-repo"
-import { FakeUserRepo } from "./doubles/fake-user-repo"
+import { PrismaUserRepo } from "../src/ports/prisma-user-repo"
 
-let userRepo: FakeUserRepo
+let userRepo: PrismaUserRepo
 let bikeRepo: FakeBikeRepo
 let rentRepo: FakeRentRepo
 
 describe("App", () => {
     beforeEach(() => {
-        userRepo = new FakeUserRepo()
+        userRepo = new PrismaUserRepo()
         bikeRepo = new FakeBikeRepo()
         rentRepo = new FakeRentRepo()
     })
