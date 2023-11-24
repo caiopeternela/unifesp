@@ -216,7 +216,7 @@ void cube() {
     glVertex3f(-0.25,-0.25,-0.25);
   glEnd();
 
-  glBindTexture(GL_TEXTURE_2D, texture_id[3]);
+  glBindTexture(GL_TEXTURE_2D, texture_id[2]);
   glBegin(GL_POLYGON);
     glNormal3f(0.25,-0.25,0.25);
     glTexCoord2f(0.25,-0.25);
@@ -235,7 +235,7 @@ void cube() {
     glVertex3f(0.25,-0.25,-0.25);
   glEnd();
 
-  glBindTexture(GL_TEXTURE_2D, texture_id[3]);
+  glBindTexture(GL_TEXTURE_2D, texture_id[2]);
   glBegin(GL_POLYGON);
     glNormal3f(-0.25,-0.25,0.25);
     glTexCoord2f(-0.25,-0.25);
@@ -254,7 +254,7 @@ void cube() {
     glVertex3f(-0.25,-0.25,-0.25);
   glEnd();
 
-  glBindTexture(GL_TEXTURE_2D, texture_id[3]);
+  glBindTexture(GL_TEXTURE_2D, texture_id[2]);
   glBegin(GL_POLYGON);
     glNormal3f(-0.25,0.25,0.25);
     glTexCoord2f(-0.25,0.25);
@@ -273,7 +273,7 @@ void cube() {
     glVertex3f(-0.25,0.25,-0.25);
   glEnd();
 
-  glBindTexture(GL_TEXTURE_2D, texture_id[3]);
+  glBindTexture(GL_TEXTURE_2D, texture_id[2]);
   glBegin(GL_POLYGON);
     glNormal3f(-0.25,0.25,0.25);
     glTexCoord2f(-0.25,0.25);
