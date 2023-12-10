@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct BMPImage {
     int   width;
@@ -18,8 +19,9 @@ char* filenameArray[MAX_NO_TEXTURES] = {
 };
 
 GLfloat angleY = 0.0f;
-int subindo = 0, animando = 0;
-float theta = 0.0f, thetaPerna = 0.0f;
+bool rising = false;
+bool walking = false;
+float theta = 0.0f, legTheta = 0.0f;
 
 void getBitmapImageData( char *pFileName, BMPImage *pImage ) {
     FILE *pFile = NULL;
@@ -83,12 +85,6 @@ void loadTextures() {
     }
 }
 
-void initTexture (void) {
-    glEnable ( GL_TEXTURE_2D );
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    loadTextures();
-}
-
 void lightning() {
     GLfloat light0_pos[] = {2.0f, 2.0f, 2.0f, 1.0f};
     GLfloat white[] = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -113,7 +109,33 @@ void lightning() {
     glEnable(GL_LIGHT1);
 }
 
-void cubo() {
+void init(void) {
+    glEnable ( GL_COLOR_MATERIAL );
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glEnable(GL_DEPTH_TEST);
+
+    glShadeModel(GL_SMOOTH);
+    glEnable(GL_NORMALIZE);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(4.0, 4.0, 4.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, 1.0, 2.0, 8.0);
+    glViewport(0, 0, 500, 500);
+
+    lightning();
+}
+
+void initTexture (void) {
+    glEnable ( GL_TEXTURE_2D );
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    loadTextures();
+}
+
+void cube() {
      float size = 1.0;
      GLfloat n[6][3] = {
         {-1.0, 0.0, 0.0},
@@ -157,13 +179,164 @@ void cubo() {
      }
 }
 
-void rotacoes(int key, int x, int y) {
+void displayFunc() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glMatrixMode(GL_MODELVIEW);
+
+    glPushMatrix();
+
+    glRotatef(angleY,0.0,1.0,0.0);
+    glScalef(0.5, 0.5, 0.5);
+    glTranslatef(0.0, 2.4, 0.0);
+    cube();
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glScalef(0.8, 1.0, 0.5);
+    glTranslatef(0.0, 0.4, 0.0);
+    cube();
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glScalef(0.125, 0.125, 0.125);
+    glTranslatef(4.5, 6.0, 0.0);
+    glutSolidCube(2.575);
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glTranslatef(2.8, 0.75, 0.0);
+    glRotatef(theta,1.0,0.0,0.0);
+    glTranslatef(-2.8, -0.75, 0.0);
+    glScalef(0.2, 0.7, 0.2);
+    glTranslatef(2.8, 0.75, 0.0);
+    cube();
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glTranslatef(5.65, 0.5, 0.0);
+    glRotatef(theta,1.0,0.0,0.0);
+    glTranslatef(-5.65, -0.5, 0.0);
+    glScalef(0.1, 0.1, 0.1);
+    glTranslatef(5.65, 0.5, 0.0);
+    glutSolidCube(2);
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glTranslatef(2.8, 0.5, 0.0);
+    glRotatef(theta,1.0,0.0,0.0);
+    glTranslatef(-2.8, -0.5, 0.0);
+    glScalef(0.2, 0.7, 0.2);
+    glTranslatef(2.8, -0.5, 0.0);
+    cube();
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glScalef(0.125, 0.125, 0.125);
+    glTranslatef(-4.5, 6.0, 0.0);
+    glutSolidCube(2.575);
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glTranslatef(-2.8, 0.75, 0.0);
+    glRotatef(-theta,1.0,0.0,0.0);
+    glTranslatef(2.8, -0.75, 0.0);
+    glScalef(0.2, 0.7, 0.2);
+    glTranslatef(-2.8, 0.75, 0.0);
+    cube();
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glTranslatef(-5.65, 0.5, 0.0);
+    glRotatef(-theta,1.0,0.0,0.0);
+    glTranslatef(5.65, -0.5, 0.0);
+    glScalef(0.1, 0.1, 0.1);
+    glTranslatef(-5.65, 0.5, 0.0);
+    glutSolidCube(2);
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glTranslatef(-2.8, 0.5, 0.0);
+    glRotatef(-theta,1.0,0.0,0.0);
+    glTranslatef(2.8, -0.5, 0.0);
+    glScalef(0.2, 0.7, 0.2);
+    glTranslatef(-2.8, -0.5, 0.0);
+    cube();
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glRotatef(-theta, 1.0, 0.0, 0.0);
+    glScalef(0.3, 0.8, 0.3);
+    glTranslatef(0.65, -0.65, 0.0);
+    cube();
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glRotatef(theta,1.0,0.0,0.0);
+    glScalef(0.135, 0.135, 0.135);
+    glTranslatef(-1.4, -7.6, 0.0);
+    glutSolidCube(2.25);
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glRotatef(-theta,1.0,0.0,0.0);
+    glTranslatef(0.65, -1.8, 0.0);
+    glRotatef(fabsf(legTheta),1.0,0.0,0.0);
+    glTranslatef(-0.65, 1.8, 0.0);
+    glScalef(0.3, 0.8, 0.3);
+    glTranslatef(0.65, -1.8, 0.0);
+    cube();
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glRotatef(theta, 1.0, 0.0, 0.0);
+    glScalef(0.3, 0.8, 0.3);
+    glTranslatef(-0.65, -0.65, 0.0);
+    cube();
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glRotatef(-theta,1.0,0.0,0.0);
+    glScalef(0.135, 0.135, 0.135);
+    glTranslatef(1.4, -7.6, 0.0);
+    glutSolidCube(2.25);
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(angleY,0.0,1.0,0.0);
+    glRotatef(theta,1.0,0.0,0.0);
+    glTranslatef(-0.65, -1.8, 0.0);
+    glRotatef(fabsf(legTheta),1.0,0.0,0.0);
+    glTranslatef(0.65, 1.8, 0.0);
+    glScalef(0.3, 0.8, 0.3);
+    glTranslatef(-0.65, -1.8, 0.0);
+    cube();
+    glPopMatrix();
+
+    glFlush();
+}
+
+void keyboardFunc(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_UP:
-            animando = 1;
+            walking = true;
             break;
         case GLUT_KEY_DOWN:
-            animando = 1;
+            walking = true;
             break;
         case GLUT_KEY_LEFT:
             angleY-=15;
@@ -177,225 +350,46 @@ void rotacoes(int key, int x, int y) {
     glutPostRedisplay() ;
 }
 
-void updateThetaAndSubindo() {
-    if (theta == 45.0) {
-        subindo = -1;
-    } else if (theta == -45.0) {
-        subindo = 1;
+void updateThetaAndRising() {
+    if (theta == 40.0) {
+        rising = false;
+    } else if (theta == -40.0) {
+        rising = true;
     }
 
-    if (subindo == 1) {
-        theta += 1.0;
-        thetaPerna += 0.5;
+    if (rising) {
+        theta += 2.0;
+        legTheta += 1.0;
     } else {
-        theta -= 1.0;
-        thetaPerna -= 0.5;
+        theta -= 2.0;
+        legTheta -= 1.0;
     }
 
-    if (thetaPerna > 20.0) thetaPerna = 20.0;
+    if (legTheta > 20.0) legTheta = 20.0;
 }
 
 void timerFunc(int value) {
-    if (animando || theta != 0.0) {
-        updateThetaAndSubindo();
+    if (walking || theta != 0.0) {
+        updateThetaAndRising();
     }
 
-    animando = 0;
+    walking = false;
 
     glutPostRedisplay();
     glutTimerFunc(100, timerFunc, 0);
 }
 
-void displayFunc() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glMatrixMode(GL_MODELVIEW);
-
-    glPushMatrix();
-
-    glRotatef(angleY,0.0,1.0,0.0);
-    glScalef(0.5, 0.5, 0.5);
-    glTranslatef(0.0, 2.4, 0.0);
-    cubo();
-    glPopMatrix();
-
-    // Corpo
-    glPushMatrix();
-    // glRotatef(angleX,1.0,0.0,0.0);
-    glRotatef(angleY,0.0,1.0,0.0);
-    glScalef(0.8, 1.0, 0.5);
-    glTranslatef(0.0, 0.4, 0.0);
-    cubo();
-    glPopMatrix();
-
-    // Ombro 1
-    glPushMatrix();
-    // glRotatef(angleX,1.0,0.0,0.0);
-    glRotatef(angleY,0.0,1.0,0.0);
-    glScalef(0.125, 0.125, 0.125);
-    glTranslatef(4.6, 6.0, 0.0);
-    glutSolidSphere(1.5, 40, 40);
-    glPopMatrix();
-
-    // Braço 1
-    glPushMatrix();
-    // glRotatef(angleX,1.0,0.0,0.0);
-    glRotatef(angleY,0.0,1.0,0.0);
-    glTranslatef(2.8, 0.5, 0.0);
-    glRotatef(theta,1.0,0.0,0.0);
-    glTranslatef(-2.8, -0.5, 0.0);
-    glScalef(0.2, 0.7, 0.2);
-    glTranslatef(2.8, 0.5, 0.0);
-    cubo();
-    glPopMatrix();
-
-    // Antebraço 1
-    glPushMatrix();
-    // glRotatef(angleX,1.0,0.0,0.0);
-    glRotatef(angleY,0.0,1.0,0.0);
-    glTranslatef(2.8, 0.5, 0.0);
-    glRotatef(theta,1.0,0.0,0.0);
-    glTranslatef(-2.8, -0.5, 0.0);
-    glScalef(0.2, 0.7, 0.2);
-    glTranslatef(2.8, -0.5, 0.0);
-    cubo();
-    glPopMatrix();
-
-    // Ombro 2
-    glPushMatrix();
-    // glRotatef(angleX,1.0,0.0,0.0);
-    glRotatef(angleY,0.0,1.0,0.0);
-    glScalef(0.1, 0.1, 0.1);
-    glTranslatef(-5.5, 8.0, 0.0);
-    glutSolidSphere(1.5, 40, 40);
-    glPopMatrix();
-
-    // Braço 2
-    glPushMatrix();
-    // glRotatef(angleX,1.0,0.0,0.0);
-    glRotatef(angleY,0.0,1.0,0.0);
-    glTranslatef(-2.8, 0.5, 0.0);
-    glRotatef(-theta,1.0,0.0,0.0);
-    glTranslatef(2.8, -0.5, 0.0);
-    glScalef(0.2, 0.7, 0.2);
-    glTranslatef(-2.8, 0.5, 0.0);
-    cubo();
-    glPopMatrix();
-
-    // Antebraço 2
-    glPushMatrix();
-    // glRotatef(angleX,1.0,0.0,0.0);
-    glRotatef(angleY,0.0,1.0,0.0);
-    glTranslatef(-2.8, 0.5, 0.0);
-    glRotatef(-theta,1.0,0.0,0.0);
-    glTranslatef(2.8, -0.5, 0.0);
-    glScalef(0.2, 0.7, 0.2);
-    glTranslatef(-2.8, -0.5, 0.0);
-    cubo();
-    glPopMatrix();
-
-    // Perna 1
-    glPushMatrix();
-    // glRotatef(angleX,1.0,0.0,0.0);
-    glRotatef(angleY,0.0,1.0,0.0);
-    glRotatef(-theta, 1.0, 0.0, 0.0);
-    glScalef(0.3, 0.8, 0.3);
-    glTranslatef(0.65, -0.65, 0.0);
-    cubo();
-    glPopMatrix();
-
-    // Joelho 1
-    glPushMatrix();
-    // glRotatef(angleX,1.0,0.0,0.0);
-    glRotatef(angleY,0.0,1.0,0.0);
-    glRotatef(theta,1.0,0.0,0.0);
-    glScalef(0.135, 0.135, 0.135);
-    glTranslatef(-1.4, -7.6, 0.0);
-    glutSolidSphere(1.5, 40, 40);
-    glPopMatrix();
-
-    // Canela 1
-    glPushMatrix();
-    // glRotatef(angleX,1.0,0.0,0.0);
-    glRotatef(angleY,0.0,1.0,0.0);
-    glRotatef(-theta,1.0,0.0,0.0);
-    glTranslatef(0.65, -1.8, 0.0);
-    glRotatef(abs(thetaPerna),1.0,0.0,0.0);
-    glTranslatef(-0.65, 1.8, 0.0);
-    glScalef(0.3, 0.8, 0.3);
-    glTranslatef(0.65, -1.8, 0.0);
-    cubo();
-    glPopMatrix();
-
-    // Perna 2
-    glPushMatrix();
-    // glRotatef(angleX,1.0,0.0,0.0);
-    glRotatef(angleY,0.0,1.0,0.0);
-    glRotatef(theta, 1.0, 0.0, 0.0);
-    glScalef(0.3, 0.8, 0.3);
-    glTranslatef(-0.65, -0.65, 0.0);
-    cubo();
-    glPopMatrix();
-
-    // Joelho 2
-    glPushMatrix();
-    // glRotatef(angleX,1.0,0.0,0.0);
-    glRotatef(angleY,0.0,1.0,0.0);
-    glRotatef(-theta,1.0,0.0,0.0);
-    glScalef(0.135, 0.135, 0.135);
-    glTranslatef(1.4, -7.6, 0.0);
-    glutSolidSphere(1.5, 40, 40);
-    glPopMatrix();
-
-    // Canela 2
-    glPushMatrix();
-    // glRotatef(angleX,1.0,0.0,0.0);
-    glRotatef(angleY,0.0,1.0,0.0);
-    glRotatef(theta,1.0,0.0,0.0);
-    glTranslatef(-0.65, -1.8, 0.0);
-    glRotatef(abs(thetaPerna),1.0,0.0,0.0);
-    glTranslatef(0.65, 1.8, 0.0);
-    glScalef(0.3, 0.8, 0.3);
-    glTranslatef(-0.65, -1.8, 0.0);
-    cubo();
-    glPopMatrix();
-
-    glFlush(); 
-}
-
-void init(void) {
-    glEnable ( GL_COLOR_MATERIAL );
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glEnable(GL_DEPTH_TEST);
-
-    glShadeModel(GL_SMOOTH);
-    glEnable(GL_NORMALIZE);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(4.0, 4.0, 4.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45.0, 1.0, 2.0, 8.0);
-    glViewport(0, 0, 500, 500);
-
-    lightning();
-}
-
 int main(int argc, char *argv[]) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowPosition(50, 50);
     glutInitWindowSize(500, 500);
     glutCreateWindow("Walking Robot");
-
     init();
     initTexture();
     glutDisplayFunc(displayFunc);
-    glutSpecialFunc(rotacoes);
+    glutSpecialFunc(keyboardFunc);
     glutTimerFunc(100, timerFunc, 0);
-
     glutMainLoop();
+
     return 0;
 }
